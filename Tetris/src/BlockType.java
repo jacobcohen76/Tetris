@@ -28,7 +28,7 @@ public enum BlockType
 		colorMap.put(Z, Color.RED);
 		colorMap.put(NULL, Color.BLACK);
 		colorMap.put(wall, Color.GRAY);
-		colorMap.put(projection, new Color(255, 253, 208));
+		colorMap.put(projection, new Color(255, 253, 208, 40));
 	}
 	
 	public static Color getColor(BlockType key)
