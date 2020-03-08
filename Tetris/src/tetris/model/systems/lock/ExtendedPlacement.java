@@ -1,4 +1,4 @@
-package tetris.model.systems;
+package tetris.model.systems.lock;
 
 public class ExtendedPlacement extends LockSystem
 {

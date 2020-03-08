@@ -2,10 +2,10 @@ package tetris.model;
 import java.util.LinkedList;
 
 import tetris.control.Action;
-import tetris.model.systems.FixedLevelUpSystem;
-import tetris.model.systems.LevelUpSystem;
-import tetris.model.systems.LockSystem;
-import tetris.model.systems.StepReset;
+import tetris.model.systems.levelup.FixedLevelUp;
+import tetris.model.systems.levelup.LevelUpSystem;
+import tetris.model.systems.lock.LockSystem;
+import tetris.model.systems.lock.StepReset;
 import tetris.util.Bag;
 import tetris.util.Vector;
 
@@ -37,7 +37,7 @@ public class Tetris
 		PIECE_LIST.add(BlockType.T);
 		PIECE_LIST.add(BlockType.Z);
 		
-		DEFAULT_LEVEL_UP_SYSTEM = new FixedLevelUpSystem(10);
+		DEFAULT_LEVEL_UP_SYSTEM = new FixedLevelUp(10);
 		DEFAULT_LOCK_SYSTEM = new StepReset(1);
 	}
 	

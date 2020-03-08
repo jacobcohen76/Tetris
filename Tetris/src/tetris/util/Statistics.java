@@ -1,6 +1,8 @@
-package tetris.model;
+package tetris.util;
 import java.math.BigInteger;
 import java.util.HashMap;
+
+import tetris.model.BlockType;
 
 public class Statistics
 {

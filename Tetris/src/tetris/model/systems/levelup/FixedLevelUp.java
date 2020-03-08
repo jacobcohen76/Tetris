@@ -1,10 +1,10 @@
-package tetris.model.systems;
+package tetris.model.systems.levelup;
 
-public class FixedLevelUpSystem implements LevelUpSystem
+public class FixedLevelUp implements LevelUpSystem
 {
 	private int n;
 	
-	public FixedLevelUpSystem(int n)
+	public FixedLevelUp(int n)
 	{
 		this.n = n;
 	}

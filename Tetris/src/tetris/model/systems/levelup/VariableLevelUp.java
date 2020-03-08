@@ -1,10 +1,10 @@
-package tetris.model.systems;
+package tetris.model.systems.levelup;
 
-public class VariableLevelUpSystem implements LevelUpSystem
+public class VariableLevelUp implements LevelUpSystem
 {
 	private int n;
 	
-	public VariableLevelUpSystem(int n)
+	public VariableLevelUp(int n)
 	{
 		this.n = n;
 	}
