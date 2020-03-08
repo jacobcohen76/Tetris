@@ -39,7 +39,7 @@ public class Tetris
 		
 		DEFAULT_RANDOMIZATION_SYSTEM = new SinglePieceRNG();
 		DEFAULT_LEVEL_UP_SYSTEM = new FixedLevelUp(10);
-		DEFAULT_LOCK_SYSTEM = new StepReset(1);
+		DEFAULT_LOCK_SYSTEM = new StepReset(0);
 	}
 	
 	private PlayField playField;
@@ -154,23 +154,27 @@ public class Tetris
 	public void tick()
 	{
 		if(falling == null)
-		{
 			loadNextPiece();
-		}
-		else
-		{
-			if(moveFalling(GRAVITY) == true)
-				lockSystem.reset();
-			else
-				lockSystem.advance();
-			
-			if(lockSystem.isLocked())
-			{
-				lockFalling();
-				lockSystem.reset();
-			}
-		}
+		step();
 		removeFilledRows();
+	}
+	
+	public void step()
+	{
+		if(moveFalling(GRAVITY) == true)
+			lockSystem.reset();
+		else
+			advanceLock();
+	}
+	
+	private void advanceLock()
+	{
+		lockSystem.advance();
+		if(lockSystem.isLocked())
+		{
+			lockFalling();
+			lockSystem.reset();
+		}
 	}
 	
 	public void perform(Action action)
@@ -182,14 +186,9 @@ public class Tetris
 	public void removeFilledRows()
 	{
 		int numFilledRows = playField.getNumFilledRows();
+		playField.removeFilledRows();
 		scoring.score(numFilledRows, level);
 		numLines += numFilledRows;
-		playField.removeFilledRows();
-		updateLevel();
-	}
-	
-	private void updateLevel()
-	{
 		level = levelUpSystem.getLevel(numLines, level);
 	}
 	

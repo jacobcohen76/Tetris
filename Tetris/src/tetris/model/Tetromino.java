@@ -168,7 +168,7 @@ public class Tetromino extends Polyomino
 		state0.CW  = state1;
 		
 		state1.CCW = state0;
-		state0.CW  = state0;
+		state1.CW  = state0;
 		
 		//constructs pivot for S piece
 		pivot = new Block(new Point(0, 0), BlockType.S);
@@ -236,7 +236,7 @@ public class Tetromino extends Polyomino
 		state0.CW  = state1;
 		
 		state1.CCW = state0;
-		state0.CW  = state0;
+		state1.CW  = state0;
 		
 		//constructs pivot for Z piece
 		pivot = new Block(new Point(0, 0), BlockType.Z);

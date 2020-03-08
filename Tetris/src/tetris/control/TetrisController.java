@@ -33,8 +33,8 @@ public class TetrisController
 		controls = new KeyBindings(model);
 		controls.bind(KeyEvent.VK_LEFT, new ShiftLeft());
 		controls.bind(KeyEvent.VK_RIGHT, new ShiftRight());
-		controls.bind(KeyEvent.VK_Z, new RotateCCW());
-		controls.bind(KeyEvent.VK_X, new RotateCW());
+		controls.bind(KeyEvent.VK_Z, new RotateCW());
+		controls.bind(KeyEvent.VK_X, new RotateCCW());
 		controls.bind(KeyEvent.VK_C, new Hold());
 		controls.bind(KeyEvent.VK_DOWN, new JumpToBottom());
 		view.addKeyListener(controls);
