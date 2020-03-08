@@ -1,3 +1,4 @@
+package tetris.model;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,9 +18,11 @@ public class PlayField implements Iterable<Row>
 		this.numRows = numRows;
 		this.numCols = numCols;
 		this.rowPadding = rowPadding;
+		
 		rowList = new ArrayList<Row>(numRows + rowPadding);
 		for(int i = 0; i < (numRows + rowPadding); i++)
 			rowList.add(new Row(i, numCols));
+		
 		filledRows = new ArrayList<Row>();
 	}
 	
@@ -85,14 +88,14 @@ public class PlayField implements Iterable<Row>
 	public boolean isWithinBounds(int row, int col)
 	{
 		boolean withinBounds = true;
-		withinBounds &= 0 <= row && row < numRows;
+		withinBounds &= 0 <= row && row < (numRows + rowPadding);
 		withinBounds &= withinBounds && rowList.get(row).isWithinBounds(col);
 		return withinBounds;
 	}
 	
 	public void removeFilledRows()
 	{
-		Collections.sort(filledRows);
+		Collections.sort(filledRows, Collections.reverseOrder());
 		for(Row filledRow: filledRows)
 			remove(filledRow);
 		filledRows.clear();
@@ -103,38 +106,17 @@ public class PlayField implements Iterable<Row>
 		return filledRows;
 	}
 	
+	public int getNumFilledRows()
+	{
+		return filledRows.size();
+	}
+	
 	private void remove(Row toRemove)
 	{
-		for(int i = numRows - 1; i > toRemove.getRowNum(); i--)
+		for(int i = toRemove.getRowNum() + 1; i < rowList.size(); i++)
 			rowList.get(i).shiftRowNum(-1);
 		rowList.remove(toRemove.getRowNum());
 		rowList.add(new Row(rowList.size(), getNumCols()));
-	}
-	
-	public String toString(Polyomino poly)
-	{
-		char[][] array = new char[rowList.size() - rowPadding][getNumCols()];
-		
-		for(int i = array.length - 1; i >= 0; i--)
-			for(int j = 0; j < array[i].length; j++)
-				array[i][j] = isEmpty(i, j) ? '_' : '#';
-		
-		if(poly != null)
-		{
-			for(Block b : poly)
-				array[b.getRow()][b.getCol()] = 'F';
-			array[poly.getPivot().getRow()][poly.getPivot().getCol()] = 'P';
-		}
-		
-		String str = "";
-		for(int i = array.length - 1; i >= 0; i--)
-		{
-			for(char b : array[i])
-				str += b;
-			str += "\n";
-		}
-		
-		return str;
 	}
 	
 	public String toString()

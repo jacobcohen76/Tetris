@@ -1,5 +1,9 @@
+package tetris.model;
 import java.awt.Color;
 import java.awt.Graphics;
+
+import tetris.util.Point;
+import tetris.util.Vector;
 
 public class Block implements Cloneable
 {

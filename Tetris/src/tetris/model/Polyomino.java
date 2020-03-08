@@ -1,5 +1,8 @@
+package tetris.model;
 import java.awt.Graphics;
 import java.util.Iterator;
+
+import tetris.util.Vector;
 
 public class Polyomino implements Iterable<Block>
 {

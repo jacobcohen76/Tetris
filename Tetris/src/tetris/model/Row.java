@@ -1,3 +1,4 @@
+package tetris.model;
 import java.awt.Graphics;
 import java.util.Iterator;
 
@@ -74,7 +75,7 @@ public class Row implements Iterable<Block>, Comparable<Row>
 		
 		public RowIterator()
 		{
-			col = -1;
+			col = 0;
 		}
 		
 		public boolean hasNext()
@@ -84,7 +85,7 @@ public class Row implements Iterable<Block>, Comparable<Row>
 
 		public Block next()
 		{
-			return get(++col);
+			return get(col++);
 		}
 	}
 	

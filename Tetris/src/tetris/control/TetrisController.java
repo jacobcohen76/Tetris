@@ -1,3 +1,4 @@
+package tetris.control;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -5,27 +6,37 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import tetris.model.Block;
+import tetris.model.PlayField;
+import tetris.model.Polyomino;
+import tetris.model.Row;
+import tetris.model.Tetris;
+import tetris.view.TetrisView;
+
 @SuppressWarnings("unused")
 public class TetrisController
 {
 	private Tetris model;
 	private TetrisView view;
 	private int blockSize;
-	private Controls controls;
+	private KeyBindings controls;
 	private ExecutorService threadExecutor;
 	
-	public TetrisController(Tetris model, TetrisView view)
+	public TetrisController(Tetris model, TetrisView view, int blockSize)
 	{
 		this.model = model;
 		this.view = view;
+		this.blockSize = blockSize;
 		
 		threadExecutor = Executors.newFixedThreadPool(3);
 		
-		controls = new Controls();
+		controls = new KeyBindings(model);
 		controls.bind(KeyEvent.VK_LEFT, new ShiftLeft());
 		controls.bind(KeyEvent.VK_RIGHT, new ShiftRight());
 		controls.bind(KeyEvent.VK_Z, new RotateCCW());
 		controls.bind(KeyEvent.VK_X, new RotateCW());
+		controls.bind(KeyEvent.VK_C, new Hold());
+		controls.bind(KeyEvent.VK_DOWN, new JumpToBottom());
 		view.addKeyListener(controls);
 		
 		init();
@@ -33,8 +44,12 @@ public class TetrisController
 	
 	private void init()
 	{
-		blockSize = 30;
+		view.setBlockSize(blockSize);
+		view.setNumRows(model.getNumRows());
+		view.setNumCols(model.getNumCols());	
+		
 		updateView();
+		
 		view.pack();
 		view.setResizable(false);
 		view.setVisible(true);
@@ -42,9 +57,6 @@ public class TetrisController
 	
 	public void updateView()
 	{
-		view.setBlockSize(blockSize);
-		view.setNumRows(model.getNumRows());
-		view.setNumCols(model.getNumCols());		
 		view.enqueue(getBlocks());
 		view.render();
 	}
@@ -80,10 +92,11 @@ public class TetrisController
 		long start = System.currentTimeMillis();
 		model.tick();
 		updateView();
+		System.out.println(model.getScore() + " " + model.getNumLines() + " " + model.getLevel());
 		sleep(millis - (System.currentTimeMillis() - start));
 	}
 	
-	private void sleep(long millis)
+	public void sleep(long millis)
 	{
 		if(millis > 0)
 			try { Thread.sleep(millis); } catch(Exception ex) {}
@@ -93,92 +106,71 @@ public class TetrisController
 	{
 		Tetris model = new Tetris();
 		TetrisView view = new TetrisView();
-		TetrisController controller = new TetrisController(model, view);
+		TetrisController controller = new TetrisController(model, view, 20);
 		
-		while(true)
-			controller.tick(150L);
-	}
-
-	public interface Action
-	{
-		public void perform();
-	}
-	
-	public class ShiftLeft implements Action
-	{
-		public void perform()
-		{
-			model.shifFallingtLeft();
-			updateView();
-		}
-	}
-	
-	public class ShiftRight implements Action
-	{
-		public void perform()
-		{
-			model.shiftFallingRight();
-			updateView();
-		}
-	}
-	
-	public class RotateCCW implements Action
-	{
-		public void perform()
-		{
-			model.rotateFallingCCW();
-			updateView();
-		}
-	}
-	
-	public class RotateCW implements Action
-	{
-		public void perform()
-		{
-			model.rotateFallingCW();
-			updateView();
-		}
-	}
-	
-	public class Hold implements Action
-	{
-		public void perform()
-		{
-			
-		}
-	}
-}
-
-class Controls implements KeyListener
-{
-	private HashMap<Integer, TetrisController.Action> keyBindings;
-	
-	public Controls()
-	{
-		keyBindings = new HashMap<Integer, TetrisController.Action>();
-	}
-	
-	public void bind(Integer keyCode, TetrisController.Action action)
-	{
-		keyBindings.put(keyCode, action);
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+		while(model.isGameOver() == false)
+			controller.tick(500L);
 		
+		System.exit(0);
 	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
+	
+	private class ShiftLeft implements Action
 	{
-		if(keyBindings.containsKey(e.getKeyCode()))
-			keyBindings.get(e.getKeyCode()).perform();
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.shiftFallingtLeft();
+			updateView();
+			return success;
+		}
 	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+	
+	private class ShiftRight implements Action
+	{
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.shiftFallingRight();
+			updateView();
+			return success;
+		}
+	}
+	
+	private class RotateCCW implements Action
+	{
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.rotateFallingCCW();
+			updateView();
+			return success;
+		}
+	}
+	
+	private class RotateCW implements Action
+	{
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.rotateFallingCW();
+			updateView();
+			return success;
+		}
+	}
+	
+	private class Hold implements Action
+	{
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.hold();
+			updateView();
+			return success;
+		}
+	}
+	
+	private class JumpToBottom implements Action
+	{
+		public boolean perform(Tetris model)
+		{
+			boolean success = model.moveFallingToBottom();
+			updateView();
+			return success;
+		}
 	}
 }

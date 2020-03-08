@@ -1,3 +1,4 @@
+package tetris.model;
 import java.awt.Color;
 import java.util.HashMap;
 
@@ -21,10 +22,10 @@ public enum BlockType
 		colorMap = new HashMap<BlockType, Color>();
 		colorMap.put(I, Color.CYAN);
 		colorMap.put(J, Color.BLUE);
-		colorMap.put(L, Color.ORANGE);
+		colorMap.put(L, new Color(210, 105, 30));
 		colorMap.put(O, Color.YELLOW);
 		colorMap.put(S, Color.GREEN);
-		colorMap.put(T, Color.MAGENTA);
+		colorMap.put(T, new Color(128, 0, 128));
 		colorMap.put(Z, Color.RED);
 		colorMap.put(NULL, Color.BLACK);
 		colorMap.put(wall, Color.GRAY);

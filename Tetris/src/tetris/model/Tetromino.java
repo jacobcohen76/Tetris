@@ -1,5 +1,9 @@
+package tetris.model;
 import java.awt.Color;
 import java.util.Iterator;
+
+import tetris.util.Point;
+import tetris.util.Vector;
 
 public class Tetromino extends Polyomino
 {
@@ -239,6 +243,29 @@ public class Tetromino extends Polyomino
 		
 		//constructs Z piece
 		Z = new Tetromino(pivot, state0);
+	}
+	
+	public static Tetromino getPiece(BlockType type)
+	{
+		switch(type)
+		{
+		case I:
+			return Tetromino.I;
+		case J:
+			return Tetromino.J;
+		case L:
+			return Tetromino.L;
+		case O:
+			return Tetromino.O;
+		case S:
+			return Tetromino.S;
+		case T:
+			return Tetromino.T;
+		case Z:
+			return Tetromino.Z;
+		default:
+			return null;
+		}
 	}
 	
 	private Rotation current;

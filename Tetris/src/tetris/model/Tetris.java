@@ -1,4 +1,13 @@
+package tetris.model;
 import java.util.LinkedList;
+
+import tetris.control.Action;
+import tetris.model.systems.FixedLevelUpSystem;
+import tetris.model.systems.LevelUpSystem;
+import tetris.model.systems.LockSystem;
+import tetris.model.systems.StepReset;
+import tetris.util.Bag;
+import tetris.util.Vector;
 
 public class Tetris
 {
@@ -7,9 +16,9 @@ public class Tetris
 	private static final int DEFAULT_NUM_COLS;
 	private static final int DEFAULT_NUM_PADDED_ROWS;
 	private static final int DEFAULT_NUM_PREVIEW_PIECES;
-	private static final int DEFAULT_MIN_LOCK_STAGE;
-	private static final int DEFAULT_MAX_LOCK_STAGE;
-	private static final LinkedList<Tetromino> PIECE_LIST;
+	private static final LinkedList<BlockType> PIECE_LIST;
+	private static final LevelUpSystem DEFAULT_LEVEL_UP_SYSTEM;
+	private static final LockSystem DEFAULT_LOCK_SYSTEM;
 	
 	static
 	{
@@ -18,45 +27,68 @@ public class Tetris
 		DEFAULT_NUM_COLS = 10;
 		DEFAULT_NUM_PADDED_ROWS = 3;
 		DEFAULT_NUM_PREVIEW_PIECES = 1;
-		DEFAULT_MIN_LOCK_STAGE = 0;
-		DEFAULT_MAX_LOCK_STAGE = 2;
 		
-		PIECE_LIST = new LinkedList<Tetromino>();
-		PIECE_LIST.add(Tetromino.I);
-		PIECE_LIST.add(Tetromino.J);
-		PIECE_LIST.add(Tetromino.L);
-		PIECE_LIST.add(Tetromino.O);
-		PIECE_LIST.add(Tetromino.S);
-		PIECE_LIST.add(Tetromino.T);
-		PIECE_LIST.add(Tetromino.Z);
+		PIECE_LIST = new LinkedList<BlockType>();
+		PIECE_LIST.add(BlockType.I);
+		PIECE_LIST.add(BlockType.J);
+		PIECE_LIST.add(BlockType.L);
+		PIECE_LIST.add(BlockType.O);
+		PIECE_LIST.add(BlockType.S);
+		PIECE_LIST.add(BlockType.T);
+		PIECE_LIST.add(BlockType.Z);
+		
+		DEFAULT_LEVEL_UP_SYSTEM = new FixedLevelUpSystem(10);
+		DEFAULT_LOCK_SYSTEM = new StepReset(1);
 	}
 	
 	private PlayField field;
-	private Bag<Tetromino> pieceBag;
-	private LinkedList<Tetromino> previewList;
-	private Tetromino falling;
-	private int lockStage;
-	private int minLockStage;
-	private int maxLockStage;
-	private boolean isGameOver;
 	
-	public Tetris(int numRows, int numCols, int numPaddedRows, int numPreviewPieces, int minLockStage, int maxLockStage)
+	private Bag<BlockType> pieceBag;
+	private LinkedList<BlockType> previewList;
+	
+	private Tetromino falling;
+	private BlockType holding;
+	
+	private ScoringSystem scoring;
+	
+	private int numLines;
+	private int level;
+	
+	private boolean isGameOver;
+	private boolean canHold;
+	
+	private LevelUpSystem levelUpSystem;
+	private LockSystem lockSystem;
+	
+	public Tetris(int numRows, int numCols, int numPaddedRows, int numPreviewPieces, LevelUpSystem levelUpSystem, LockSystem lockSystem)
 	{
 		field = new PlayField(numRows, numCols, numPaddedRows);
-		pieceBag = new Bag<Tetromino>();
-		previewList = getNewPreviewList(numPreviewPieces);
-		falling = null;
 		
-		this.minLockStage = minLockStage;
-		this.maxLockStage = maxLockStage;
-		lockStage = minLockStage;
+		pieceBag = new Bag<BlockType>();
+		previewList = getNewPreviewList(numPreviewPieces);
+		
+		falling = null;
+		holding = null;
+		
+		scoring = new ScoringSystem();
+		
+		numLines = 0;
+		level = 0;
 		
 		isGameOver = false;
+		canHold = false;
+		
+		this.levelUpSystem = levelUpSystem;
+		this.lockSystem = lockSystem;
 	}
 	
 	public Tetris(int numRows, int numCols)
 	{
-		this(numRows, numCols, DEFAULT_NUM_PADDED_ROWS, DEFAULT_NUM_PREVIEW_PIECES, DEFAULT_MIN_LOCK_STAGE, DEFAULT_MAX_LOCK_STAGE);
+		this(numRows, numCols,
+				DEFAULT_NUM_PADDED_ROWS,
+				DEFAULT_NUM_PREVIEW_PIECES,
+				DEFAULT_LEVEL_UP_SYSTEM,
+				DEFAULT_LOCK_SYSTEM);
 	}
 	
 	public Tetris()
@@ -67,11 +99,29 @@ public class Tetris
 	public void loadNextPiece()
 	{
 		setFalling(getNextPiece());
+		canHold = true;
 	}
 	
-	private void setFalling(Tetromino falling)
+	public boolean hold()
 	{
-		this.falling = center(falling);
+		if(canHold == true)
+		{
+			BlockType temp = holding;
+			holding = falling.getPivot().type;
+			if(temp != null)
+				setFalling(Tetromino.getPiece(temp));
+			else
+				falling = null;
+			canHold = false;
+			return true;
+		}
+		return false;
+	}
+	
+	private void setFalling(Tetromino newFalling)
+	{
+		falling = center(newFalling);
+		isGameOver |= field.collidesWith(falling);
 	}
 	
 	public boolean isGameOver()
@@ -99,7 +149,7 @@ public class Tetris
 	private Tetromino center(Tetromino tetro)
 	{
 		int i = getNumCols() / 2;
-		int j = getNumRows() - 1;
+		int j = getNumRows() + 1;
 		Vector center = new Vector(i, j);
 		return tetro.move(center);
 	}
@@ -112,32 +162,57 @@ public class Tetris
 		}
 		else
 		{
-			lockStage = moveFalling(GRAVITY) ? minLockStage : ++lockStage;
-			if(maxLockStage < lockStage)
+			if(moveFalling(GRAVITY) == true)
+				lockSystem.reset();
+			else
+				lockSystem.advance();
+			
+			if(lockSystem.isLocked())
 			{
 				lockFalling();
-				lockStage = minLockStage;
+				lockSystem.reset();
 			}
 		}
 		removeFilledRows();
 	}
 	
+	public void perform(Action action)
+	{
+		if(action.perform(this) == true)
+			lockSystem.update();
+	}
+	
 	public void removeFilledRows()
 	{
+		int numFilledRows = field.getNumFilledRows();
+		scoring.score(numFilledRows, level);
+		numLines += numFilledRows;
 		field.removeFilledRows();
+		updateLevel();
+	}
+	
+	private void updateLevel()
+	{
+		level = levelUpSystem.getLevel(numLines, level);
+	}
+	
+	public int getNumLines()
+	{
+		return numLines;
 	}
 	
 	public void lockFalling()
 	{
+		canHold = false;
 		emplace(falling);
 		falling = null;
 	}
 	
 	private Tetromino getNextPiece()
 	{
-		Tetromino nextPiece = previewList.poll();
+		BlockType type = previewList.poll();
 		previewList.add(getRandomPiece());
-		return nextPiece;
+		return Tetromino.getPiece(type);
 	}
 	
 	private void refillBag(int n)
@@ -149,7 +224,7 @@ public class Tetris
 		}
 	}
 	
-	private Tetromino getRandomPiece()
+	private BlockType getRandomPiece()
 	{
 		if(pieceBag.size() < 35)
 			refillBag(5);
@@ -190,7 +265,7 @@ public class Tetris
 		return moveFalling(GRAVITY);
 	}
 	
-	public boolean shifFallingtLeft()
+	public boolean shiftFallingtLeft()
 	{
 		return moveFalling(Vector.WEST);
 	}
@@ -220,10 +295,26 @@ public class Tetris
 		return projection;
 	}
 	
+	private Tetromino getFallingBottom()
+	{
+		return getProjection(falling, GRAVITY);
+	}
+	
+	public boolean moveFallingToBottom()
+	{
+		if(falling != null)
+		{
+			Tetromino temp = falling;
+			falling = getFallingBottom();
+			lockSystem.lock();
+			return temp != falling;
+		}
+		return false;
+	}
+	
 	private Tetromino getProjection(Tetromino tetro, Vector dir)
 	{
 		Tetromino projection;
-		tetro = getProjection(tetro);
 		do {
 			projection = tetro.move(dir);
 			tetro = field.collidesWith(projection) ? tetro : projection;
@@ -233,12 +324,12 @@ public class Tetris
 	
 	public Tetromino getFallingProjection()
 	{
-		return getProjection(falling, GRAVITY);
+		return getProjection(getProjection(falling), GRAVITY);
 	}
 	
-	private LinkedList<Tetromino> getNewPreviewList(int numPreviewPieces)
+	private LinkedList<BlockType> getNewPreviewList(int numPreviewPieces)
 	{
-		LinkedList<Tetromino> previewList = new LinkedList<Tetromino>();
+		LinkedList<BlockType> previewList = new LinkedList<BlockType>();
 		for(int i = 0; i < numPreviewPieces; i++)
 			previewList.add(getRandomPiece());
 		return previewList;
@@ -252,5 +343,15 @@ public class Tetris
 	public Polyomino getFalling()
 	{
 		return falling;
+	}
+	
+	public long getScore()
+	{
+		return scoring.getCurrentScore();
+	}
+	
+	public int getLevel()
+	{
+		return level;
 	}
 }
