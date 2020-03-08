@@ -313,6 +313,14 @@ public class Tetromino extends Polyomino
 	{
 		return new Tetromino(getPivot().clone(), current.CW, type);
 	}
+	
+	public Tetromino changeType(BlockType newType)
+	{
+		Tetromino transformed = move(Vector.ZERO);
+		for(Block b : transformed)
+			b.type = newType;
+		return transformed;
+	}
 }
 
 class Rotation implements Iterable<Vector>

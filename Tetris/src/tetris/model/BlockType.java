@@ -12,8 +12,9 @@ public enum BlockType
 	T,
 	Z,
 	NULL,
-	wall,
-	projection;
+	WALL,
+	PROJECTION,
+	GHOST;
 	
 	private static HashMap<BlockType, Color> colorMap;
 	
@@ -28,8 +29,9 @@ public enum BlockType
 		colorMap.put(T, new Color(128, 0, 128));
 		colorMap.put(Z, Color.RED);
 		colorMap.put(NULL, Color.BLACK);
-		colorMap.put(wall, Color.GRAY);
-		colorMap.put(projection, new Color(255, 253, 208, 40));
+		colorMap.put(WALL, Color.GRAY);
+		colorMap.put(PROJECTION, new Color(255, 253, 208, 40));
+		colorMap.put(GHOST, new Color(255, 253, 208, 40));
 	}
 	
 	public static Color getColor(BlockType key)

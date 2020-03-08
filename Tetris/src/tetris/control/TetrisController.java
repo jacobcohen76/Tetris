@@ -70,7 +70,7 @@ public class TetrisController
 	{
 		LinkedList<Block> toRender = new LinkedList<Block>();
 		
-		PlayField field = model.getField();
+		PlayField field = model.getPlayField();
 		for(Row row : field)
 			for(Block block : row)
 				if(block != null)
@@ -79,7 +79,7 @@ public class TetrisController
 		Polyomino falling = model.getFalling(), projection;
 		if(falling != null)
 		{
-			projection = model.getFallingProjection();
+			projection = model.getGhostProjection();
 			for(Block block : projection)
 				if(block != null)
 					toRender.add(block);

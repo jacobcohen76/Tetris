@@ -6,7 +6,8 @@ import tetris.model.systems.levelup.FixedLevelUp;
 import tetris.model.systems.levelup.LevelUpSystem;
 import tetris.model.systems.lock.LockSystem;
 import tetris.model.systems.lock.StepReset;
-import tetris.util.Bag;
+import tetris.model.systems.random.RandomizationSystem;
+import tetris.model.systems.random.SinglePieceRNG;
 import tetris.util.Vector;
 
 public class Tetris
@@ -15,8 +16,8 @@ public class Tetris
 	private static final int DEFAULT_NUM_ROWS;
 	private static final int DEFAULT_NUM_COLS;
 	private static final int DEFAULT_NUM_PADDED_ROWS;
-	private static final int DEFAULT_NUM_PREVIEW_PIECES;
 	private static final LinkedList<BlockType> PIECE_LIST;
+	private static final RandomizationSystem DEFAULT_RANDOMIZATION_SYSTEM;
 	private static final LevelUpSystem DEFAULT_LEVEL_UP_SYSTEM;
 	private static final LockSystem DEFAULT_LOCK_SYSTEM;
 	
@@ -26,7 +27,6 @@ public class Tetris
 		DEFAULT_NUM_ROWS = 20;
 		DEFAULT_NUM_COLS = 10;
 		DEFAULT_NUM_PADDED_ROWS = 3;
-		DEFAULT_NUM_PREVIEW_PIECES = 1;
 		
 		PIECE_LIST = new LinkedList<BlockType>();
 		PIECE_LIST.add(BlockType.I);
@@ -37,19 +37,21 @@ public class Tetris
 		PIECE_LIST.add(BlockType.T);
 		PIECE_LIST.add(BlockType.Z);
 		
+		DEFAULT_RANDOMIZATION_SYSTEM = new SinglePieceRNG();
 		DEFAULT_LEVEL_UP_SYSTEM = new FixedLevelUp(10);
 		DEFAULT_LOCK_SYSTEM = new StepReset(1);
 	}
 	
-	private PlayField field;
+	private PlayField playField;
 	
-	private Bag<BlockType> pieceBag;
-	private LinkedList<BlockType> previewList;
+	private ScoringSystem scoring;
+	private RandomizationSystem randomizer;
+	private LevelUpSystem levelUpSystem;
+	private LockSystem lockSystem;
 	
 	private Tetromino falling;
 	private BlockType holding;
-	
-	private ScoringSystem scoring;
+	private BlockType next;
 	
 	private int numLines;
 	private int level;
@@ -57,36 +59,31 @@ public class Tetris
 	private boolean isGameOver;
 	private boolean canHold;
 	
-	private LevelUpSystem levelUpSystem;
-	private LockSystem lockSystem;
-	
-	public Tetris(int numRows, int numCols, int numPaddedRows, int numPreviewPieces, LevelUpSystem levelUpSystem, LockSystem lockSystem)
+	public Tetris(int numRows, int numCols, int numPaddedRows, RandomizationSystem randomizer, LevelUpSystem levelUpSystem, LockSystem lockSystem)
 	{
-		field = new PlayField(numRows, numCols, numPaddedRows);
+		playField = new PlayField(numRows, numCols, numPaddedRows);
 		
-		pieceBag = new Bag<BlockType>();
-		previewList = getNewPreviewList(numPreviewPieces);
+		this.scoring = new ScoringSystem();		
+		this.randomizer = randomizer;
+		this.levelUpSystem = levelUpSystem;
+		this.lockSystem = lockSystem;
 		
 		falling = null;
 		holding = null;
-		
-		scoring = new ScoringSystem();
+		next = randomizer.getRandomType();
 		
 		numLines = 0;
 		level = 0;
 		
 		isGameOver = false;
 		canHold = false;
-		
-		this.levelUpSystem = levelUpSystem;
-		this.lockSystem = lockSystem;
 	}
 	
 	public Tetris(int numRows, int numCols)
 	{
 		this(numRows, numCols,
 				DEFAULT_NUM_PADDED_ROWS,
-				DEFAULT_NUM_PREVIEW_PIECES,
+				DEFAULT_RANDOMIZATION_SYSTEM,
 				DEFAULT_LEVEL_UP_SYSTEM,
 				DEFAULT_LOCK_SYSTEM);
 	}
@@ -121,7 +118,7 @@ public class Tetris
 	private void setFalling(Tetromino newFalling)
 	{
 		falling = center(newFalling);
-		isGameOver |= field.collidesWith(falling);
+		isGameOver |= playField.collidesWith(falling);
 	}
 	
 	public boolean isGameOver()
@@ -132,18 +129,18 @@ public class Tetris
 	public String toString()
 	{
 		String str = "";
-		str += field;
+		str += playField;
 		return str;
 	}
 	
 	public int getNumRows()
 	{
-		return field.getNumRows();
+		return playField.getNumRows();
 	}
 	
 	public int getNumCols()
 	{
-		return field.getNumCols();
+		return playField.getNumCols();
 	}
 	
 	private Tetromino center(Tetromino tetro)
@@ -184,10 +181,10 @@ public class Tetris
 	
 	public void removeFilledRows()
 	{
-		int numFilledRows = field.getNumFilledRows();
+		int numFilledRows = playField.getNumFilledRows();
 		scoring.score(numFilledRows, level);
 		numLines += numFilledRows;
-		field.removeFilledRows();
+		playField.removeFilledRows();
 		updateLevel();
 	}
 	
@@ -210,14 +207,14 @@ public class Tetris
 	
 	private Tetromino getNextPiece()
 	{
-		BlockType type = previewList.poll();
-		previewList.add(getRandomPiece());
-		return Tetromino.getPiece(type);
+		BlockType current = next;
+		next = randomizer.getRandomType();
+		return Tetromino.getPiece(current);
 	}
 	
 	public BlockType getNextType()
 	{
-		return previewList.peek();
+		return next;
 	}
 	
 	public BlockType getHoldingType()
@@ -225,25 +222,9 @@ public class Tetris
 		return holding;
 	}
 	
-	private void refillBag(int n)
-	{
-		for(int i = 0; i < n; i++)
-		{
-			pieceBag.addAll(PIECE_LIST);
-			pieceBag.shuffle();
-		}
-	}
-	
-	private BlockType getRandomPiece()
-	{
-		if(pieceBag.size() < 35)
-			refillBag(5);
-		return pieceBag.pull();
-	}
-	
 	private boolean emplace(Polyomino poly)
 	{
-		return field.emplace(poly);
+		return playField.emplace(poly);
 	}
 	
 	public boolean rotateFallingCCW()
@@ -251,7 +232,7 @@ public class Tetris
 		if(falling != null)
 		{
 			Tetromino rotated = falling.rotateCCW();
-			falling = field.collidesWith(rotated) ? falling : rotated;
+			falling = playField.collidesWith(rotated) ? falling : rotated;
 			return rotated == falling;
 		}
 		else
@@ -263,7 +244,7 @@ public class Tetris
 		if(falling != null)
 		{
 			Tetromino rotated = falling.rotateCW();
-			falling = field.collidesWith(rotated) ? falling : rotated;
+			falling = playField.collidesWith(rotated) ? falling : rotated;
 			return rotated == falling;
 		}
 		else
@@ -290,19 +271,11 @@ public class Tetris
 		if(falling != null)
 		{
 			Tetromino moved = falling.move(amount);
-			falling = field.collidesWith(moved) ? falling : moved;
+			falling = playField.collidesWith(moved) ? falling : moved;
 			return falling == moved;
 		}
 		else
 			return false;
-	}
-	
-	private Tetromino getProjection(Tetromino tetro)
-	{
-		Tetromino projection = tetro.move(Vector.ZERO);
-		for(Block b : projection)
-			b.type = BlockType.projection;
-		return projection;
 	}
 	
 	private Tetromino getFallingBottom()
@@ -327,27 +300,20 @@ public class Tetris
 		Tetromino projection;
 		do {
 			projection = tetro.move(dir);
-			tetro = field.collidesWith(projection) ? tetro : projection;
+			tetro = playField.collidesWith(projection) ? tetro : projection;
 		} while(tetro == projection);
 		return tetro;
 	}
 	
-	public Tetromino getFallingProjection()
+	public Tetromino getGhostProjection()
 	{
-		return getProjection(getProjection(falling), GRAVITY);
+		Tetromino ghost = falling.changeType(BlockType.GHOST);
+		return getProjection(ghost, GRAVITY);
 	}
 	
-	private LinkedList<BlockType> getNewPreviewList(int numPreviewPieces)
+	public PlayField getPlayField()
 	{
-		LinkedList<BlockType> previewList = new LinkedList<BlockType>();
-		for(int i = 0; i < numPreviewPieces; i++)
-			previewList.add(getRandomPiece());
-		return previewList;
-	}
-	
-	public PlayField getField()
-	{
-		return field;
+		return playField;
 	}
 	
 	public Polyomino getFalling()
