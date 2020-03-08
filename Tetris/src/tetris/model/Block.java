@@ -63,4 +63,15 @@ public class Block implements Cloneable
 		g.setColor(Color.BLACK);
 		g.drawRect(x, y, blockSize, blockSize);
 	}
+	
+	public void render(Graphics g, int blockSize, int xShift, int yShift, Point pos)
+	{
+		int x = (int) Math.round(pos.x * blockSize - xShift);
+		int y = (int) Math.round(yShift - (pos.y + 1) * blockSize);
+		
+		g.setColor(BlockType.getColor(type));
+		g.fillRect(x, y, blockSize, blockSize);
+		g.setColor(Color.BLACK);
+		g.drawRect(x, y, blockSize, blockSize);
+	}
 }

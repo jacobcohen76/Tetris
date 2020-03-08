@@ -5,6 +5,7 @@ package tetris.view;
  * and open the template in the editor.
  */
 
+import tetris.util.Format;
 
 /**
  *
@@ -12,6 +13,9 @@ package tetris.view;
  */
 public class LevelPanel extends javax.swing.JPanel {
 
+	private static final int NUMZEROS = 2;
+	private static final long MAX = Format.getMax(NUMZEROS);
+	
 	private static final long serialVersionUID = -8341632680147599717L;
 	
 	/** Creates new form LevelPanel */
@@ -40,7 +44,7 @@ public class LevelPanel extends javax.swing.JPanel {
 
         levelNumLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         levelNumLabel.setForeground(new java.awt.Color(255, 255, 255));
-        levelNumLabel.setText("00");
+        levelNumLabel.setText(Format.formatNumber(0L, NUMZEROS));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -64,7 +68,11 @@ public class LevelPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>                        
 
-
+    public void setLevelNum(int levelNum)
+    {
+    	levelNumLabel.setText(Format.formatNumber(levelNum % MAX, NUMZEROS));
+    }
+    
     // Variables declaration - do not modify                     
     private javax.swing.JLabel levelLabel;
     private javax.swing.JLabel levelNumLabel;

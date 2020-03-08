@@ -1,4 +1,7 @@
 package tetris.view;
+
+import tetris.util.Format;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,6 +13,8 @@ package tetris.view;
  * @author Jacob Cohen
  */
 public class ScorePanel extends javax.swing.JPanel {
+	private static final int NUMZEROS = 6;
+	private static final long MAX = Format.getMax(NUMZEROS);
 
 	private static final long serialVersionUID = 6295804053645580226L;
 	
@@ -41,7 +46,7 @@ public class ScorePanel extends javax.swing.JPanel {
 
         topScoreNumLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         topScoreNumLabel.setForeground(new java.awt.Color(255, 255, 255));
-        topScoreNumLabel.setText("000000");
+        topScoreNumLabel.setText(Format.formatNumber(0L, NUMZEROS));
 
         scoreLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         scoreLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -49,7 +54,7 @@ public class ScorePanel extends javax.swing.JPanel {
 
         scoreNumLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         scoreNumLabel.setForeground(new java.awt.Color(255, 255, 255));
-        scoreNumLabel.setText("000000");
+        scoreNumLabel.setText(Format.formatNumber(0L, NUMZEROS));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -80,12 +85,12 @@ public class ScorePanel extends javax.swing.JPanel {
     
     public void setScore(long score)
     {
-    	
+    	scoreNumLabel.setText(Format.formatNumber(score % MAX, NUMZEROS));
     }
     
-    public void setHighScore(long score)
+    public void setHighScore(long highScore)
     {
-    	
+    	topScoreNumLabel.setText(Format.formatNumber(highScore % MAX, NUMZEROS));
     }
 
     // Variables declaration - do not modify                     

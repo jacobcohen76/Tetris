@@ -215,6 +215,16 @@ public class Tetris
 		return Tetromino.getPiece(type);
 	}
 	
+	public BlockType getNextType()
+	{
+		return previewList.peek();
+	}
+	
+	public BlockType getHoldingType()
+	{
+		return holding;
+	}
+	
 	private void refillBag(int n)
 	{
 		for(int i = 0; i < n; i++)

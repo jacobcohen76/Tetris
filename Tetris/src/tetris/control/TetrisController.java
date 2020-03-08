@@ -46,7 +46,7 @@ public class TetrisController
 	{
 		view.setBlockSize(blockSize);
 		view.setNumRows(model.getNumRows());
-		view.setNumCols(model.getNumCols());	
+		view.setNumCols(model.getNumCols());
 		
 		updateView();
 		
@@ -57,6 +57,11 @@ public class TetrisController
 	
 	public void updateView()
 	{
+		view.setNumLines(model.getNumLines());
+		view.setScore(model.getScore());
+		view.setLevel(model.getLevel());
+		view.setNext(model.getNextType());
+		view.setHold(model.getHoldingType());
 		view.enqueue(getBlocks());
 		view.render();
 	}
@@ -92,7 +97,6 @@ public class TetrisController
 		long start = System.currentTimeMillis();
 		model.tick();
 		updateView();
-		System.out.println(model.getScore() + " " + model.getNumLines() + " " + model.getLevel());
 		sleep(millis - (System.currentTimeMillis() - start));
 	}
 	

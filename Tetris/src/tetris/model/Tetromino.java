@@ -47,7 +47,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.I);
 		
 		//constructs I piece
-		I = new Tetromino(pivot, state0);
+		I = new Tetromino(pivot, state0, BlockType.I);
 		
 		//constructs rotation pattern for J piece
 		relativePoints = new Vector[3];
@@ -90,7 +90,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.J);
 				
 		//constructs J piece
-		J = new Tetromino(pivot, state0);
+		J = new Tetromino(pivot, state0, BlockType.J);
 		
 		//constructs rotation pattern for L piece
 		relativePoints = new Vector[3];
@@ -133,7 +133,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.L);
 				
 		//constructs L piece
-		L = new Tetromino(pivot, state0);
+		L = new Tetromino(pivot, state0, BlockType.L);
 		
 		//constructs rotation pattern for O piece
 		relativePoints = new Vector[3];
@@ -149,7 +149,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.O);
 		
 		//constructs O piece
-		O = new Tetromino(pivot, state0);
+		O = new Tetromino(pivot, state0, BlockType.O);
 		
 		//constructs rotation pattern for S piece
 		relativePoints = new Vector[3];
@@ -174,7 +174,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.S);
 		
 		//constructs S piece
-		S = new Tetromino(pivot, state0);
+		S = new Tetromino(pivot, state0, BlockType.S);
 		
 		//constructs rotation pattern for T piece
 		relativePoints = new Vector[3];
@@ -217,7 +217,7 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.T);
 				
 		//constructs T piece
-		T = new Tetromino(pivot, state0);
+		T = new Tetromino(pivot, state0, BlockType.T);
 		
 		//constructs rotation pattern for Z piece
 		relativePoints = new Vector[3];
@@ -242,11 +242,13 @@ public class Tetromino extends Polyomino
 		pivot = new Block(new Point(0, 0), BlockType.Z);
 		
 		//constructs Z piece
-		Z = new Tetromino(pivot, state0);
+		Z = new Tetromino(pivot, state0, BlockType.Z);
 	}
 	
 	public static Tetromino getPiece(BlockType type)
 	{
+		if(type == null)
+			return null;
 		switch(type)
 		{
 		case I:
@@ -269,11 +271,13 @@ public class Tetromino extends Polyomino
 	}
 	
 	private Rotation current;
+	private BlockType type;
 	
-	protected Tetromino(Block pivot, Rotation current)
+	protected Tetromino(Block pivot, Rotation current, BlockType type)
 	{
 		super(new Block[4], 4);
 		this.current = current;
+		this.type = type;
 		blocks[0] = pivot;
 		
 		int i = 1;
@@ -295,14 +299,19 @@ public class Tetromino extends Polyomino
 		return new Tetromino(transformed, current);
 	}
 	
+	public BlockType getType()
+	{
+		return type;
+	}
+	
 	public Tetromino rotateCCW()
 	{	
-		return new Tetromino(getPivot().clone(), current.CCW);
+		return new Tetromino(getPivot().clone(), current.CCW, type);
 	}
 	
 	public Tetromino rotateCW()
 	{
-		return new Tetromino(getPivot().clone(), current.CW);
+		return new Tetromino(getPivot().clone(), current.CW, type);
 	}
 }
 

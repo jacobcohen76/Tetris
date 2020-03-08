@@ -5,11 +5,16 @@ package tetris.view;
  * and open the template in the editor.
  */
 
+import tetris.util.Format;
+
 /**
  *
  * @author Jacob Cohen
  */
 public class LinesPanel extends javax.swing.JPanel {
+	
+	private static final int NUMZEROS = 3;
+	private static final long MAX = Format.getMax(NUMZEROS);
 
 	private static final long serialVersionUID = -2143223560478461930L;
 	
@@ -40,7 +45,7 @@ public class LinesPanel extends javax.swing.JPanel {
 
         linesNumLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         linesNumLabel.setForeground(new java.awt.Color(255, 255, 255));
-        linesNumLabel.setText("0000");
+        linesNumLabel.setText(Format.formatNumber(0L, NUMZEROS));
 
         dashLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         dashLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -68,9 +73,13 @@ public class LinesPanel extends javax.swing.JPanel {
                     .addComponent(dashLabel)
                     .addComponent(linesNumLabel)))
         );
-    }// </editor-fold>                        
+    }// </editor-fold>
 
-
+    public void setNumLines(int numLines)
+    {
+    	linesNumLabel.setText(Format.formatNumber(numLines % MAX, NUMZEROS));
+    }
+    
     // Variables declaration - do not modify                     
     private javax.swing.JLabel dashLabel;
     private javax.swing.JLabel linesLabel;
