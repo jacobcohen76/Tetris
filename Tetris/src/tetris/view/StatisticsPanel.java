@@ -5,6 +5,8 @@ package tetris.view;
  * and open the template in the editor.
  */
 
+import java.awt.Color;
+
 /**
  *
  * @author Jacob Cohen
@@ -16,7 +18,8 @@ public class StatisticsPanel extends javax.swing.JPanel {
 	/**
      * Creates new form StatisticsPanel
      */
-    public StatisticsPanel() {
+    public StatisticsPanel(Color background) {
+    	setBackground(background);
         initComponents();
     }
 
@@ -37,7 +40,6 @@ public class StatisticsPanel extends javax.swing.JPanel {
         levelLabel7 = new javax.swing.JLabel();
         levelLabel8 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(0, 0, 0));
         setForeground(new java.awt.Color(255, 255, 255));
 
         levelLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N

@@ -1,4 +1,5 @@
 package tetris.control;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -109,7 +110,7 @@ public class TetrisController
 	public static void main(String args[])
 	{
 		Tetris model = new Tetris();
-		TetrisView view = new TetrisView();
+		TetrisView view = new TetrisView(Color.GRAY);
 		TetrisController controller = new TetrisController(model, view, 20);
 		
 		while(model.isGameOver() == false)

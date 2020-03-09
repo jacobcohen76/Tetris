@@ -5,6 +5,8 @@
  */
 package tetris.view;
 
+import java.awt.Color;
+
 import tetris.model.Tetromino;
 
 /**
@@ -18,7 +20,8 @@ public class NextPanel extends javax.swing.JPanel {
 	/**
      * Creates new form HoldPanel
      */
-    public NextPanel() {
+    public NextPanel(Color background) {
+    	setBackground(background);
         initComponents();
     }
 
@@ -32,8 +35,6 @@ public class NextPanel extends javax.swing.JPanel {
 
         nextLabel = new javax.swing.JLabel();
         tetrominoPanel = new TetrominoPanel();
-
-        setBackground(new java.awt.Color(0, 0, 0));
 
         nextLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         nextLabel.setForeground(new java.awt.Color(255, 255, 255));

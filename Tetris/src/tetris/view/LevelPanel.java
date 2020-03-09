@@ -5,6 +5,8 @@ package tetris.view;
  * and open the template in the editor.
  */
 
+import java.awt.Color;
+
 import tetris.util.Format;
 
 /**
@@ -19,7 +21,8 @@ public class LevelPanel extends javax.swing.JPanel {
 	private static final long serialVersionUID = -8341632680147599717L;
 	
 	/** Creates new form LevelPanel */
-    public LevelPanel() {
+    public LevelPanel(Color background) {
+    	setBackground(background);
         initComponents();
     }
 
@@ -34,7 +37,6 @@ public class LevelPanel extends javax.swing.JPanel {
         levelLabel = new javax.swing.JLabel();
         levelNumLabel = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(0, 0, 0));
         setForeground(new java.awt.Color(255, 255, 255));
         setToolTipText("");
 

@@ -1,5 +1,7 @@
 package tetris.view;
 
+import java.awt.Color;
+
 import tetris.util.Format;
 
 /*
@@ -21,7 +23,8 @@ public class ScorePanel extends javax.swing.JPanel {
 	/**
      * Creates new form ScorePanel
      */
-    public ScorePanel() {
+    public ScorePanel(Color background) {
+    	setBackground(background);
         initComponents();
     }
 
@@ -37,8 +40,6 @@ public class ScorePanel extends javax.swing.JPanel {
         topScoreNumLabel = new javax.swing.JLabel();
         scoreLabel = new javax.swing.JLabel();
         scoreNumLabel = new javax.swing.JLabel();
-
-        setBackground(new java.awt.Color(0, 0, 0));
 
         topScoreLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         topScoreLabel.setForeground(new java.awt.Color(255, 255, 255));

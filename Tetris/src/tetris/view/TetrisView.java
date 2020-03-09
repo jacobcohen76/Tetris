@@ -21,7 +21,7 @@ public class TetrisView extends JFrame
 	private int numRows;
 	private int numCols;
 	
-	public TetrisView()
+	public TetrisView(Color background)
 	{		
 		setTitle("Tetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,8 +29,7 @@ public class TetrisView extends JFrame
 		numRows = 20;
 		numCols = 10;
 		blockSize = 20;
-//		getContentPane().setBackground(Color.BLACK);
-//		getContentPane().add(paintPanel);
+		getContentPane().setBackground(background);
 		initComponents();
 	}
 	
@@ -59,6 +58,11 @@ public class TetrisView extends JFrame
 		paintPanel.repaint();
 	}
 	
+	public Color getBackground()
+	{
+		return getContentPane().getBackground();
+	}
+	
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -67,12 +71,12 @@ public class TetrisView extends JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-    	holdPanel = new HoldPanel();
-    	nextPanel = new NextPanel();
-        linesPanel = new LinesPanel();
-        levelPanel = new LevelPanel();
-        scorePanel = new ScorePanel();
-        statisticsPanel = new StatisticsPanel();
+    	holdPanel = new HoldPanel(getBackground());
+    	nextPanel = new NextPanel(getBackground());
+        linesPanel = new LinesPanel(getBackground());
+        levelPanel = new LevelPanel(getBackground());
+        scorePanel = new ScorePanel(getBackground());
+        statisticsPanel = new StatisticsPanel(getBackground());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));

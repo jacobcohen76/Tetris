@@ -73,7 +73,7 @@ public class TetrominoPanel extends JPanel
 	
 	public void paint(Graphics g)
 	{
-		g.setColor(Color.WHITE);
+		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		int xShift = - PADDING;

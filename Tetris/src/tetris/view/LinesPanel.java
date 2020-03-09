@@ -5,6 +5,8 @@ package tetris.view;
  * and open the template in the editor.
  */
 
+import java.awt.Color;
+
 import tetris.util.Format;
 
 /**
@@ -21,7 +23,8 @@ public class LinesPanel extends javax.swing.JPanel {
 	/**
      * Creates new form LinesPanel
      */
-    public LinesPanel() {
+    public LinesPanel(Color background) {
+    	setBackground(background);
         initComponents();
     }
 
@@ -36,8 +39,6 @@ public class LinesPanel extends javax.swing.JPanel {
         linesLabel = new javax.swing.JLabel();
         linesNumLabel = new javax.swing.JLabel();
         dashLabel = new javax.swing.JLabel();
-
-        setBackground(new java.awt.Color(0, 0, 0));
 
         linesLabel.setFont(new java.awt.Font("Consolas", 0, 24)); // NOI18N
         linesLabel.setForeground(new java.awt.Color(255, 255, 255));
