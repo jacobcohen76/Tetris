@@ -119,7 +119,7 @@ public class TetrisController
 		TetrisController controller = new TetrisController(model, Color.GRAY, 25);
 		
 		while(model.isGameOver() == false)
-			controller.tick(500L);
+			controller.tick(model.getDropRate());
 		
 		System.exit(0);
 	}

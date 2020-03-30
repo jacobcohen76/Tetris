@@ -121,6 +121,11 @@ public class Tetris
 		isGameOver |= playField.collidesWith(falling);
 	}
 	
+	public long getDropRate()
+	{
+		return 100L;
+	}
+	
 	public boolean isGameOver()
 	{
 		return isGameOver;
