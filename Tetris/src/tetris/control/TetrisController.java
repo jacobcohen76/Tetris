@@ -23,7 +23,7 @@ public class TetrisController
 	private KeyBindings controls;
 	private ExecutorService threadExecutor;
 	
-	public TetrisController(Tetris model, TetrisView view, int blockSize)
+	private TetrisController(Tetris model, TetrisView view, int blockSize)
 	{
 		this.model = model;
 		this.view = view;
@@ -43,6 +43,11 @@ public class TetrisController
 		init();
 	}
 	
+	public TetrisController(Tetris model, Color background, int blockSize)
+	{
+		this(model, new TetrisView(background, model.getNumRows(), model.getNumCols(), blockSize), blockSize);
+	}
+	
 	private void init()
 	{
 		view.setBlockSize(blockSize);
@@ -60,6 +65,7 @@ public class TetrisController
 	{
 		view.setNumLines(model.getNumLines());
 		view.setScore(model.getScore());
+		view.setHighScore(model.getHighScore());
 		view.setLevel(model.getLevel());
 		view.setNext(model.getNextType());
 		view.setHold(model.getHoldingType());
@@ -110,8 +116,7 @@ public class TetrisController
 	public static void main(String args[])
 	{
 		Tetris model = new Tetris();
-		TetrisView view = new TetrisView(Color.GRAY);
-		TetrisController controller = new TetrisController(model, view, 20);
+		TetrisController controller = new TetrisController(model, Color.GRAY, 25);
 		
 		while(model.isGameOver() == false)
 			controller.tick(500L);

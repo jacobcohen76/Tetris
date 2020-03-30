@@ -21,14 +21,14 @@ public class TetrisView extends JFrame
 	private int numRows;
 	private int numCols;
 	
-	public TetrisView(Color background)
+	public TetrisView(Color background, int numRows, int numCols, int blockSize)
 	{		
 		setTitle("Tetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		paintPanel = new PaintPanel();
-		numRows = 20;
-		numCols = 10;
-		blockSize = 20;
+		this.numRows = numRows;
+		this.numCols = numCols;
+		this.blockSize = blockSize;
 		getContentPane().setBackground(background);
 		initComponents();
 	}

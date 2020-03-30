@@ -325,6 +325,11 @@ public class Tetris
 		return scoring.getCurrentScore();
 	}
 	
+	public long getHighScore()
+	{
+		return ScoringSystem.getHighScore();
+	}
+	
 	public int getLevel()
 	{
 		return level;

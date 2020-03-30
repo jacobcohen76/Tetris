@@ -21,7 +21,6 @@ public class TetrominoPanel extends JPanel
 	private static final int PADDING;
 	private static final HashMap<BlockType, Vector> CENTER_VECTOR_MAP;
 	
-	
 	static
 	{
 		serialVersionUID = -2686986774238238207L;
@@ -73,11 +72,13 @@ public class TetrominoPanel extends JPanel
 	
 	public void paint(Graphics g)
 	{
+		Dimension size = getPreferredSize();
+		
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(0, 0, size.width, size.height);
 		
 		int xShift = - PADDING;
-		int yShift = getHeight() - PADDING;
+		int yShift = size.height - PADDING;
 		
 		if(toDisplay != null)
 			for(Block block : toDisplay)
