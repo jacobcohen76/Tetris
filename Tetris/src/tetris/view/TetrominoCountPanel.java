@@ -57,7 +57,6 @@ public class TetrominoCountPanel extends javax.swing.JPanel {
 	   int height = tetrominoPanel.getPreferredSize().height;
 	   height = height > countLabel.getPreferredSize().height ? height : countLabel.getPreferredSize().height;
 	   int width = super.getPreferredSize().width;
-	   System.out.println(height + ", " + width);
 	   return new Dimension(width, height);
    }
 
