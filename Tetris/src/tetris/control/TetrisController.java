@@ -12,6 +12,7 @@ import tetris.model.PlayField;
 import tetris.model.Polyomino;
 import tetris.model.Row;
 import tetris.model.Tetris;
+import tetris.model.Tetromino;
 import tetris.view.TetrisView;
 
 @SuppressWarnings("unused")
@@ -63,6 +64,11 @@ public class TetrisController
 	
 	public void updateView()
 	{
+		if(model.newFallingTetromino)
+		{
+			view.setStatistics((Tetromino)model.getFalling());
+			model.newFallingTetromino = false;
+		}
 		view.setNumLines(model.getNumLines());
 		view.setScore(model.getScore());
 		view.setHighScore(model.getHighScore());

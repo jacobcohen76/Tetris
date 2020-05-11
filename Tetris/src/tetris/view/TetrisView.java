@@ -169,9 +169,9 @@ public class TetrisView extends JFrame
     	holdPanel.setTetromino(Tetromino.getPiece(type));
     }
     
-    public void setStatistics()
+    public void setStatistics(Tetromino tetromino)
     {
-    	
+    	statisticsPanel.add(tetromino);
     }
     
 	private class PaintPanel extends JPanel

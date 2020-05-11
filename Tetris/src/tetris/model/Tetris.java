@@ -115,15 +115,18 @@ public class Tetris
 		return false;
 	}
 	
+	public boolean newFallingTetromino = false;
+	
 	private void setFalling(Tetromino newFalling)
 	{
+		newFallingTetromino = true;
 		falling = center(newFalling);
 		isGameOver |= playField.collidesWith(falling);
 	}
 	
 	public long getDropRate()
 	{
-		return 100L;
+		return 500L;
 	}
 	
 	public boolean isGameOver()

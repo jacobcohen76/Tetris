@@ -9,6 +9,7 @@ import java.awt.Color;
 
 import tetris.model.BlockType;
 import tetris.model.Tetromino;
+import tetris.util.Statistics;
 
 /**
  *
@@ -93,8 +94,52 @@ public class StatisticsPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tetrominoCountPanel_I, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-    }// </editor-fold>                        
-
+    }// </editor-fold>
+    
+    private Statistics stats = new Statistics();
+    
+    public void add(Tetromino tetromino)
+    {
+    	BlockType type = tetromino == null ? null : tetromino.getPivot().type;
+    	if(type != null)
+    	{
+    		stats.update(type);
+	    	switch(type)
+	    	{
+			case GHOST:
+				break;
+			case I:
+				tetrominoCountPanel_I.setCount(stats.getStats(type).intValue());
+				break;
+			case J:
+				tetrominoCountPanel_J.setCount(stats.getStats(type).intValue());
+				break;
+			case L:
+				tetrominoCountPanel_L.setCount(stats.getStats(type).intValue());
+				break;
+			case NULL:
+				break;
+			case O:
+				tetrominoCountPanel_O.setCount(stats.getStats(type).intValue());
+				break;
+			case PROJECTION:
+				break;
+			case S:
+				tetrominoCountPanel_S.setCount(stats.getStats(type).intValue());
+				break;
+			case T:
+				tetrominoCountPanel_T.setCount(stats.getStats(type).intValue());
+				break;
+			case WALL:
+				break;
+			case Z:
+				tetrominoCountPanel_Z.setCount(stats.getStats(type).intValue());
+				break;
+			default:
+				break;
+	    	}
+    	}
+    }
 
     // Variables declaration - do not modify                     
     private javax.swing.JLabel statisticsLabel;
